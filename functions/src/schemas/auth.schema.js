@@ -6,6 +6,12 @@ const EmailAndPasswordSignUpSchema = z.object({
   displayName: z.string(),
 });
 
+const EmailAndPasswordLogInSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
 module.exports = {
   EmailAndPasswordSignUpSchema,
+  EmailAndPasswordLogInSchema,
 };
