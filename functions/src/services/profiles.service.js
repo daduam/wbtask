@@ -1,5 +1,9 @@
 const { getFirestore } = require("firebase-admin/firestore");
 
+const {
+  USER_PROFILE_COLLECTION_PATH,
+} = require("../constants/profile.constants");
+
 function createUserProfile(req, res) {
   const payload = {
     userId: req.user.user_id,
@@ -11,7 +15,7 @@ function createUserProfile(req, res) {
   };
 
   getFirestore()
-    .collection("userProfiles")
+    .collection(USER_PROFILE_COLLECTION_PATH)
     .doc(payload.userId)
     .set(payload)
     .then(function (_) {
@@ -40,7 +44,7 @@ function updateUserProfile(req, res) {
   };
 
   getFirestore()
-    .collection("userProfiles")
+    .collection(USER_PROFILE_COLLECTION_PATH)
     .doc(req.user.user_id)
     .update(payload)
     .then(function (_) {
@@ -67,7 +71,7 @@ function getUserProfile(req, res) {
   const documentPath = req.params.userId;
 
   getFirestore()
-    .collection("userProfiles")
+    .collection(USER_PROFILE_COLLECTION_PATH)
     .doc(documentPath)
     .get()
     .then(function (doc) {
@@ -86,8 +90,32 @@ function getUserProfile(req, res) {
     });
 }
 
+function deleteUserProfile(req, res) {
+  if (req.params.userId !== req.user.user_id) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const documentPath = req.params.userId;
+
+  getFirestore()
+    .collection(USER_PROFILE_COLLECTION_PATH)
+    .doc(documentPath)
+    .delete()
+    .then(function (_) {
+      res.status(200).send({
+        message: `User profile ${documentPath} removed successfully.`,
+      });
+      return;
+    })
+    .catch(function (error) {
+      res.status(500).send(error);
+    });
+}
+
 module.exports = {
   createUserProfile,
   updateUserProfile,
   getUserProfile,
+  deleteUserProfile,
 };

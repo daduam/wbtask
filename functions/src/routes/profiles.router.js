@@ -10,6 +10,7 @@ const {
   createUserProfile,
   updateUserProfile,
   getUserProfile,
+  deleteUserProfile,
 } = require("../services/profiles.service");
 
 const router = express.Router();
@@ -29,5 +30,7 @@ router.post(
 );
 
 router.get("/:userId", getUserProfile);
+
+router.delete("/:userId", validateFirebaseIdToken, deleteUserProfile);
 
 module.exports = router;
