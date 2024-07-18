@@ -9,6 +9,7 @@ const {
 const {
   createUserProfile,
   updateUserProfile,
+  getUserProfile,
 } = require("../services/profiles.service");
 
 const router = express.Router();
@@ -26,5 +27,7 @@ router.post(
   validateFirebaseIdToken,
   updateUserProfile
 );
+
+router.get("/:userId", getUserProfile);
 
 module.exports = router;

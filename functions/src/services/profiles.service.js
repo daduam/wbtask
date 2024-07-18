@@ -63,7 +63,31 @@ function updateUserProfile(req, res) {
     });
 }
 
+function getUserProfile(req, res) {
+  const documentPath = req.params.userId;
+
+  getFirestore()
+    .collection("userProfiles")
+    .doc(documentPath)
+    .get()
+    .then(function (doc) {
+      if (!doc.exists) {
+        res
+          .status(404)
+          .send({ message: `User profile ${documentPath} not found.` });
+        return;
+      }
+
+      res.status(200).send(doc.data());
+      return;
+    })
+    .catch(function (error) {
+      res.status(500).send(error);
+    });
+}
+
 module.exports = {
   createUserProfile,
   updateUserProfile,
+  getUserProfile,
 };
