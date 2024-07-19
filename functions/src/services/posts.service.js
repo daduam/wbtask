@@ -26,4 +26,25 @@ function createBlogPost(req, res) {
     });
 }
 
-module.exports = { createBlogPost };
+function getBlogPostById(req, res) {
+  const documentPath = req.params.postId;
+
+  getFirestore()
+    .collection(BLOG_POSTS_COLLECTION_PATH)
+    .doc(documentPath)
+    .get()
+    .then(function (doc) {
+      if (!doc.exists) {
+        res.status(404).send({ message: `Post ${documentPath} not found.` });
+        return;
+      }
+
+      res.status(200).send({ id: doc.id, ...doc.data() });
+      return;
+    })
+    .catch(function (error) {
+      res.status(500).send(error);
+    });
+}
+
+module.exports = { createBlogPost, getBlogPostById };
