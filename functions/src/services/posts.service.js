@@ -47,6 +47,23 @@ function getBlogPostById(req, res) {
     });
 }
 
+function getAllBlogPosts(_req, res) {
+  getFirestore()
+    .collection(BLOG_POSTS_COLLECTION_PATH)
+    .get()
+    .then(function (snapshot) {
+      const posts = [];
+      snapshot.forEach((doc) => {
+        posts.push({ id: doc.id, ...doc.data() });
+      });
+      res.status(200).send(posts);
+      return;
+    })
+    .catch(function (error) {
+      res.status(500).send(error);
+    });
+}
+
 function updateBlogPost(req, res) {
   const payload = {
     title: req.body.title,
@@ -125,6 +142,7 @@ function deleteBlogPost(req, res) {
 module.exports = {
   createBlogPost,
   getBlogPostById,
+  getAllBlogPosts,
   updateBlogPost,
   deleteBlogPost,
 };

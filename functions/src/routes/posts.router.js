@@ -7,6 +7,7 @@ const {
   getBlogPostById,
   updateBlogPost,
   deleteBlogPost,
+  getAllBlogPosts,
 } = require("../services/posts.service");
 const {
   CreateBlogPostSchema,
@@ -23,6 +24,8 @@ router.post(
 );
 
 router.get("/:postId", getBlogPostById);
+
+router.get("/", getAllBlogPosts);
 
 router.put(
   "/:postId",
