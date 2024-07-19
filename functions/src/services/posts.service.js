@@ -59,39 +59,29 @@ function updateBlogPost(req, res) {
     .collection(BLOG_POSTS_COLLECTION_PATH)
     .doc(documentPath);
 
-  getFirestore()
-    .runTransaction(function (tx) {
-      return tx.get(docRef).then(function (doc) {
-        if (!doc.exists) {
-          throw {
-            message: `Post ${documentPath} not found`,
-            statusCode: 404,
-          };
-        }
-
-        const post = doc.data();
-        if (post.authorId != req.user.user_id) {
-          throw { message: "Unauthorized", statusCode: 401 };
-        }
-
-        tx.update(docRef, payload);
-
-        return post;
-      });
-    })
-    .then(function (post) {
-      res.status(200).send({
-        message: `Post ${documentPath} updated successfully`,
-        data: { id: documentPath, ...post, ...payload },
-      });
-      return;
-    })
-    .catch(function (error) {
-      if (error.message && error.statusCode) {
-        res.status(error.statusCode).send({ message: error.message });
+  docRef
+    .get()
+    .then(function (doc) {
+      if (!doc.exists) {
+        res.status(404).send({ message: `Post ${documentPath} not found` });
         return;
       }
 
+      const post = doc.data();
+      if (post.authorId != req.user.user_id) {
+        res.status(401).send("Unauthorized");
+        return;
+      }
+
+      docRef.update(payload).then(function (_) {
+        res.status(200).send({
+          message: `Post ${documentPath} updated successfully`,
+          data: { id: documentPath, ...post, ...payload },
+        });
+        return;
+      });
+    })
+    .catch(function (error) {
       res.status(500).send(error);
       return;
     });
