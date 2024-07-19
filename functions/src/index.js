@@ -6,6 +6,7 @@ const functions = require("firebase-functions");
 const { initializeApp, applicationDefault } = require("firebase-admin/app");
 
 const authRouter = require("./routes/auth.router");
+const postsRouter = require("./routes/posts.router");
 const profilesRouter = require("./routes/profiles.router");
 
 initializeApp({
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: true }));
 
 app.use("/auth", authRouter);
+app.use("/posts", postsRouter);
 app.use("/profiles", profilesRouter);
 
 exports.api = functions.https.onRequest(app);

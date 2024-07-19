@@ -1,8 +1,6 @@
 const { getFirestore } = require("firebase-admin/firestore");
 
-const {
-  USER_PROFILE_COLLECTION_PATH,
-} = require("../constants/profile.constants");
+const { USER_PROFILE_COLLECTION_PATH } = require("../constants");
 
 function createUserProfile(req, res) {
   const payload = {
