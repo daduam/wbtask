@@ -1,4 +1,4 @@
-const { getFirestore } = require("firebase-admin/firestore");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 
 const { BLOG_POSTS_COLLECTION_PATH } = require("../constants");
 
@@ -12,7 +12,7 @@ function createBlogPost(req, res) {
 
   getFirestore()
     .collection(BLOG_POSTS_COLLECTION_PATH)
-    .add(payload)
+    .add({ ...payload, createdAt: FieldValue.serverTimestamp() })
     .then(function (doc) {
       res.status(201).send({
         message: "Blog post created successfully.",
@@ -39,7 +39,7 @@ function getBlogPostById(req, res) {
         return;
       }
 
-      res.status(200).send({ id: doc.id, ...doc.data() });
+      res.status(200).send(buildPostResponseFromDoc(doc));
       return;
     })
     .catch(function (error) {
@@ -47,14 +47,17 @@ function getBlogPostById(req, res) {
     });
 }
 
-function getAllBlogPosts(_req, res) {
+function getAllBlogPosts(req, res) {
+  const limit = parseInt(req.query.limit) || 10;
+  const after = req.query.after;
+
   getFirestore()
     .collection(BLOG_POSTS_COLLECTION_PATH)
     .get()
     .then(function (snapshot) {
       const posts = [];
-      snapshot.forEach((doc) => {
-        posts.push({ id: doc.id, ...doc.data() });
+      snapshot.forEach(function (doc) {
+        posts.push(buildPostResponseFromDoc(doc));
       });
       res.status(200).send(posts);
       return;
@@ -93,7 +96,7 @@ function updateBlogPost(req, res) {
       docRef.update(payload).then(function (_) {
         res.status(200).send({
           message: `Post ${documentPath} updated successfully`,
-          data: { id: documentPath, ...post, ...payload },
+          data: { ...buildPostResponseFromDoc(doc), ...payload },
         });
         return;
       });
@@ -137,6 +140,14 @@ function deleteBlogPost(req, res) {
       res.status(500).send(error);
       return;
     });
+}
+
+function buildPostResponseFromDoc(doc) {
+  return {
+    id: doc.id,
+    ...doc.data(),
+    createdAt: doc.data().createdAt.toDate(),
+  };
 }
 
 module.exports = {
