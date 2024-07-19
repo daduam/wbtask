@@ -47,4 +47,54 @@ function getBlogPostById(req, res) {
     });
 }
 
-module.exports = { createBlogPost, getBlogPostById };
+function updateBlogPost(req, res) {
+  const payload = {
+    title: req.body.title,
+    description: req.body.description,
+    body: req.body.body,
+  };
+
+  const documentPath = req.params.postId;
+  const docRef = getFirestore()
+    .collection(BLOG_POSTS_COLLECTION_PATH)
+    .doc(documentPath);
+
+  getFirestore()
+    .runTransaction(function (tx) {
+      return tx.get(docRef).then(function (doc) {
+        if (!doc.exists) {
+          throw {
+            message: `Post ${documentPath} not found`,
+            statusCode: 404,
+          };
+        }
+
+        const post = doc.data();
+        if (post.authorId != req.user.user_id) {
+          throw { message: "Unauthorized", statusCode: 401 };
+        }
+
+        tx.update(docRef, payload);
+
+        return post;
+      });
+    })
+    .then(function (post) {
+      res.status(200).send({
+        message: `Post ${documentPath} updated successfully`,
+        data: { id: documentPath, ...post, ...payload },
+      });
+      return;
+    })
+    .catch(function (error) {
+      if (error.message && error.statusCode) {
+        res.status(error.statusCode).send({ message: error.message });
+        return;
+      }
+
+      res.status(500).send(error);
+      return;
+    });
+}
+
+module.exports = { createBlogPost, getBlogPostById, updateBlogPost };

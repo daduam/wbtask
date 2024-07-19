@@ -5,8 +5,12 @@ const { validateRequestBody } = require("../middlewares/validation.middleware");
 const {
   createBlogPost,
   getBlogPostById,
+  updateBlogPost,
 } = require("../services/posts.service");
-const { CreateBlogPostSchema } = require("../schemas/posts.schema");
+const {
+  CreateBlogPostSchema,
+  UpdateBlogPostSchema,
+} = require("../schemas/posts.schema");
 
 const router = express.Router();
 
@@ -18,5 +22,12 @@ router.post(
 );
 
 router.get("/:postId", getBlogPostById);
+
+router.put(
+  "/:postId",
+  validateFirebaseIdToken,
+  validateRequestBody(UpdateBlogPostSchema),
+  updateBlogPost
+);
 
 module.exports = router;
