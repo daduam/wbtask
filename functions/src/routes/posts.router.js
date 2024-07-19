@@ -6,6 +6,7 @@ const {
   createBlogPost,
   getBlogPostById,
   updateBlogPost,
+  deleteBlogPost,
 } = require("../services/posts.service");
 const {
   CreateBlogPostSchema,
@@ -29,5 +30,7 @@ router.put(
   validateRequestBody(UpdateBlogPostSchema),
   updateBlogPost
 );
+
+router.delete("/:postId", validateFirebaseIdToken, deleteBlogPost);
 
 module.exports = router;

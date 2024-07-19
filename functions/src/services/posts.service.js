@@ -87,4 +87,44 @@ function updateBlogPost(req, res) {
     });
 }
 
-module.exports = { createBlogPost, getBlogPostById, updateBlogPost };
+function deleteBlogPost(req, res) {
+  const documentPath = req.params.postId;
+  const docRef = getFirestore()
+    .collection(BLOG_POSTS_COLLECTION_PATH)
+    .doc(documentPath);
+
+  docRef
+    .get()
+    .then(function (doc) {
+      if (!doc.exists) {
+        res
+          .status(200)
+          .send({ message: `Post ${documentPath} deleted successfully.` });
+        return;
+      }
+
+      const post = doc.data();
+      if (post.authorId != req.user.user_id) {
+        res.status(401).send("Unauthorized");
+        return;
+      }
+
+      docRef.delete().then(function (_) {
+        res
+          .status(200)
+          .send({ message: `Post ${documentPath} deleted successfully.` });
+        return;
+      });
+    })
+    .catch(function (error) {
+      res.status(500).send(error);
+      return;
+    });
+}
+
+module.exports = {
+  createBlogPost,
+  getBlogPostById,
+  updateBlogPost,
+  deleteBlogPost,
+};
