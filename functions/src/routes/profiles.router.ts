@@ -1,19 +1,19 @@
-const express = require("express");
+import { Router } from "express";
 
-const { validateFirebaseIdToken } = require("../middlewares/auth.middleware");
-const { validateRequestBody } = require("../middlewares/validation.middleware");
-const {
+import { validateFirebaseIdToken } from "../middlewares/auth.middleware";
+import { validateRequestBody } from "../middlewares/validation.middleware";
+import {
   CreateUserProfileSchema,
   UpdateUserProfileSchema,
-} = require("../schemas/profiles.schema");
-const {
+} from "../schemas/profiles.schema";
+import {
   createUserProfile,
-  updateUserProfile,
-  getUserProfile,
   deleteUserProfile,
-} = require("../services/profiles.service");
+  getUserProfile,
+  updateUserProfile,
+} from "../services/profiles.service";
 
-const router = express.Router();
+const router = Router();
 
 router.post(
   "/",
@@ -33,4 +33,4 @@ router.get("/:userId", getUserProfile);
 
 router.delete("/:userId", validateFirebaseIdToken, deleteUserProfile);
 
-module.exports = router;
+export default router;

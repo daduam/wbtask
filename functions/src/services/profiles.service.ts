@@ -1,12 +1,13 @@
-const { getFirestore } = require("firebase-admin/firestore");
+import { Request, Response } from "express";
+import { getFirestore } from "firebase-admin/firestore";
 
-const { USER_PROFILE_COLLECTION_PATH } = require("../constants");
+import { USER_PROFILE_COLLECTION_PATH } from "../constants";
 
-function createUserProfile(req, res) {
+export function createUserProfile(req: Request, res: Response) {
   const payload = {
-    userId: req.user.user_id,
-    displayName: req.user.name,
-    email: req.user.email,
+    userId: req.user?.user_id,
+    displayName: req.user?.name,
+    email: req.user?.email,
     gender: req.body.gender,
     bio: req.body.bio,
     country: req.body.country,
@@ -29,8 +30,8 @@ function createUserProfile(req, res) {
     });
 }
 
-function updateUserProfile(req, res) {
-  if (req.params.userId !== req.user.user_id) {
+export function updateUserProfile(req: Request, res: Response) {
+  if (req.params.userId !== req.user?.user_id) {
     res.status(401).send("Unauthorized");
     return;
   }
@@ -49,9 +50,9 @@ function updateUserProfile(req, res) {
       res.status(200).send({
         message: "User profile updated successfully",
         data: {
-          userId: req.user.user_id,
-          displayName: req.user.name,
-          email: req.user.email,
+          userId: req.user?.user_id,
+          displayName: req.user?.name,
+          email: req.user?.email,
           gender: payload.gender,
           bio: payload.bio,
           country: payload.country,
@@ -65,7 +66,7 @@ function updateUserProfile(req, res) {
     });
 }
 
-function getUserProfile(req, res) {
+export function getUserProfile(req: Request, res: Response) {
   const documentPath = req.params.userId;
 
   getFirestore()
@@ -88,8 +89,8 @@ function getUserProfile(req, res) {
     });
 }
 
-function deleteUserProfile(req, res) {
-  if (req.params.userId !== req.user.user_id) {
+export function deleteUserProfile(req: Request, res: Response) {
+  if (req.params.userId !== req.user?.user_id) {
     res.status(401).send("Unauthorized");
     return;
   }
@@ -110,10 +111,3 @@ function deleteUserProfile(req, res) {
       res.status(500).send(error);
     });
 }
-
-module.exports = {
-  createUserProfile,
-  updateUserProfile,
-  getUserProfile,
-  deleteUserProfile,
-};

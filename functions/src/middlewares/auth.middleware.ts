@@ -1,6 +1,11 @@
-const { getAuth } = require("firebase-admin/auth");
+import { NextFunction, Request, Response } from "express";
+import { getAuth } from "firebase-admin/auth";
 
-function validateFirebaseIdToken(req, res, next) {
+export function validateFirebaseIdToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -8,14 +13,12 @@ function validateFirebaseIdToken(req, res, next) {
     return;
   }
 
-  let idToken;
-  if (authorization && authorization.startsWith("Bearer ")) {
-    idToken = authorization.split("Bearer ")[1];
-  } else {
+  if (!authorization.startsWith("Bearer ")) {
     res.status(401).send("Unauthorized");
     return;
   }
 
+  const idToken = authorization.split("Bearer ")[1];
   getAuth()
     .verifyIdToken(idToken)
     .then(function (decodedIdToken) {
@@ -28,7 +31,3 @@ function validateFirebaseIdToken(req, res, next) {
       return;
     });
 }
-
-module.exports = {
-  validateFirebaseIdToken,
-};

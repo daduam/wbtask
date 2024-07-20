@@ -1,7 +1,8 @@
-const axios = require("axios");
-const { getAuth } = require("firebase-admin/auth");
+import axios, { AxiosError } from "axios";
+import { Request, Response } from "express";
+import { getAuth } from "firebase-admin/auth";
 
-function signUpWithEmailAndPassword(req, res) {
+export function signUpWithEmailAndPassword(req: Request, res: Response) {
   getAuth()
     .createUser({
       email: req.body.email,
@@ -20,7 +21,7 @@ function signUpWithEmailAndPassword(req, res) {
     });
 }
 
-function logInWithEmailAndPassword(req, res) {
+export function logInWithEmailAndPassword(req: Request, res: Response) {
   const identityToolkitEndpoint = process.env.IDENTITY_TOOLKIT_BASE_URL;
   const apiKey = process.env.WEB_API_KEY;
 
@@ -37,15 +38,10 @@ function logInWithEmailAndPassword(req, res) {
       return res.status(200).send(response.data);
     })
     .catch(function (error) {
-      if (error instanceof axios.AxiosError && error.response) {
+      if (error instanceof AxiosError && error.response) {
         return res.status(error.response.status).send(error.response.data);
       }
 
       return res.status(500).send(error);
     });
 }
-
-module.exports = {
-  signUpWithEmailAndPassword,
-  logInWithEmailAndPassword,
-};
