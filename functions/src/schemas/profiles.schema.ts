@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 
 export const CreateUserProfileSchema = z.object({
   gender: z.string().min(1),

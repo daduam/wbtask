@@ -2,8 +2,8 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-import cors from "cors";
-import express from "express";
+import * as cors from "cors";
+import * as express from "express";
 import { applicationDefault, initializeApp } from "firebase-admin/app";
 import * as functions from "firebase-functions";
 
