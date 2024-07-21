@@ -1,10 +1,15 @@
-const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+import { Request, Response } from "express";
+import {
+  DocumentSnapshot,
+  FieldValue,
+  getFirestore,
+} from "firebase-admin/firestore";
 
-const { BLOG_POSTS_COLLECTION_PATH } = require("../constants");
+import { BLOG_POSTS_COLLECTION_PATH } from "../constants";
 
-function createBlogPost(req, res) {
+export function createBlogPost(req: Request, res: Response) {
   const payload = {
-    authorId: req.user.user_id,
+    authorId: req.user?.user_id,
     title: req.body.title,
     description: req.body.description,
     body: req.body.body,
@@ -26,7 +31,7 @@ function createBlogPost(req, res) {
     });
 }
 
-function getBlogPostById(req, res) {
+export function getBlogPostById(req: Request, res: Response) {
   const documentPath = req.params.postId;
 
   getFirestore()
@@ -47,15 +52,12 @@ function getBlogPostById(req, res) {
     });
 }
 
-function getAllBlogPosts(req, res) {
-  const limit = parseInt(req.query.limit) || 10;
-  const after = req.query.after;
-
+export function getAllBlogPosts(req: Request, res: Response) {
   getFirestore()
     .collection(BLOG_POSTS_COLLECTION_PATH)
     .get()
     .then(function (snapshot) {
-      const posts = [];
+      const posts: any[] = [];
       snapshot.forEach(function (doc) {
         posts.push(buildPostResponseFromDoc(doc));
       });
@@ -67,7 +69,7 @@ function getAllBlogPosts(req, res) {
     });
 }
 
-function updateBlogPost(req, res) {
+export function updateBlogPost(req: Request, res: Response) {
   const payload = {
     title: req.body.title,
     description: req.body.description,
@@ -88,7 +90,7 @@ function updateBlogPost(req, res) {
       }
 
       const post = doc.data();
-      if (post.authorId != req.user.user_id) {
+      if (post?.authorId != req.user?.user_id) {
         res.status(401).send("Unauthorized");
         return;
       }
@@ -107,7 +109,7 @@ function updateBlogPost(req, res) {
     });
 }
 
-function deleteBlogPost(req, res) {
+export function deleteBlogPost(req: Request, res: Response) {
   const documentPath = req.params.postId;
   const docRef = getFirestore()
     .collection(BLOG_POSTS_COLLECTION_PATH)
@@ -124,7 +126,7 @@ function deleteBlogPost(req, res) {
       }
 
       const post = doc.data();
-      if (post.authorId != req.user.user_id) {
+      if (post?.authorId != req.user?.user_id) {
         res.status(401).send("Unauthorized");
         return;
       }
@@ -142,18 +144,10 @@ function deleteBlogPost(req, res) {
     });
 }
 
-function buildPostResponseFromDoc(doc) {
+function buildPostResponseFromDoc(doc: DocumentSnapshot) {
   return {
     id: doc.id,
     ...doc.data(),
-    createdAt: doc.data().createdAt.toDate(),
+    createdAt: doc.data()?.createdAt.toDate(),
   };
 }
-
-module.exports = {
-  createBlogPost,
-  getBlogPostById,
-  getAllBlogPosts,
-  updateBlogPost,
-  deleteBlogPost,
-};
