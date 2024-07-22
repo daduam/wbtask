@@ -1,14 +1,14 @@
 import { Router } from "express";
 
+import {
+  logInWithEmailAndPassword,
+  signUpWithEmailAndPassword,
+} from "../handlers/auth.handler";
 import { validateRequestBody } from "../middlewares/validation.middleware";
 import {
   EmailAndPasswordLogInSchema,
   EmailAndPasswordSignUpSchema,
 } from "../schemas/auth.schema";
-import {
-  logInWithEmailAndPassword,
-  signUpWithEmailAndPassword,
-} from "../services/auth.service";
 
 const router = Router();
 

@@ -1,18 +1,18 @@
 import { Router } from "express";
 
-import { validateFirebaseIdToken } from "../middlewares/auth.middleware";
-import { validateRequestBody } from "../middlewares/validation.middleware";
-import {
-  CreateBlogPostSchema,
-  UpdateBlogPostSchema,
-} from "../schemas/posts.schema";
 import {
   createBlogPost,
   deleteBlogPost,
   getAllBlogPosts,
   getBlogPostById,
   updateBlogPost,
-} from "../services/posts.service";
+} from "../handlers/posts.handler";
+import { validateFirebaseIdToken } from "../middlewares/auth.middleware";
+import { validateRequestBody } from "../middlewares/validation.middleware";
+import {
+  CreateBlogPostSchema,
+  UpdateBlogPostSchema,
+} from "../schemas/posts.schema";
 
 const router = Router();
 

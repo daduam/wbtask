@@ -1,17 +1,17 @@
 import { Router } from "express";
 
+import {
+  createUserProfile,
+  deleteUserProfile,
+  getUserProfile,
+  updateUserProfile,
+} from "../handlers/profiles.handler";
 import { validateFirebaseIdToken } from "../middlewares/auth.middleware";
 import { validateRequestBody } from "../middlewares/validation.middleware";
 import {
   CreateUserProfileSchema,
   UpdateUserProfileSchema,
 } from "../schemas/profiles.schema";
-import {
-  createUserProfile,
-  deleteUserProfile,
-  getUserProfile,
-  updateUserProfile,
-} from "../services/profiles.service";
 
 const router = Router();
 
