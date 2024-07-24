@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { getAuth } from "firebase-admin/auth";
 
-export function validateFirebaseIdToken(
+export async function validateFirebaseIdToken(
   req: Request,
   res: Response,
   next: NextFunction
@@ -13,21 +13,14 @@ export function validateFirebaseIdToken(
     return;
   }
 
-  if (!authorization.startsWith("Bearer ")) {
+  const idToken = authorization.split("Bearer ")[1];
+
+  try {
+    const decodedIdToken = await getAuth().verifyIdToken(idToken);
+    req.user = decodedIdToken;
+    next();
+  } catch (error) {
     res.status(401).send("Unauthorized");
     return;
   }
-
-  const idToken = authorization.split("Bearer ")[1];
-  getAuth()
-    .verifyIdToken(idToken)
-    .then(function (decodedIdToken) {
-      req.user = decodedIdToken;
-      next();
-      return;
-    })
-    .catch(function (_error) {
-      res.status(401).send("Unauthorized");
-      return;
-    });
 }
